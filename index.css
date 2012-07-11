@@ -1,0 +1,45 @@
+#stats.updating * {
+    cursor: wait;
+}
+
+#stats-nav {
+    margin-bottom: 1em;
+}
+
+#stats-hour {
+    width: 4em;
+}
+
+#stats-nav select, #stats-nav span {
+    margin-right: 1em;
+}
+
+#stats-hits, #stats-time {
+    font-weight: bold;
+}
+
+#stats-chart {
+    width: 900px;
+    height: 300px;
+    margin: 1em 0;
+}
+
+#stats table {
+    float: left;
+    margin: 1em 2em 1em 0;
+}
+
+#stats table td {
+    padding: 0.2em 1em;
+}
+
+.jqplot-highlighter-tooltip {
+    color: black;
+    background-color: white;
+    padding: 0.1em 0.4em;
+    text-align: center;
+ }
+
+.jqplot-cursor-tooltip{
+    cursor:pointer;
+}

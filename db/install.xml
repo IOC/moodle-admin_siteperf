@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<XMLDB PATH="admin/tool/siteperf/db" VERSION="20120627" COMMENT="XMLDB file for Moodle admin/tool/iocprofiling"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="../../../../lib/xmldb/xmldb.xsd"
+>
+  <TABLES>
+    <TABLE NAME="tool_siteperf_log" COMMENT="-" NEXT="tool_siteperf_stats">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="year"/>
+        <FIELD NAME="year" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="week"/>
+        <FIELD NAME="week" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="year" NEXT="day"/>
+        <FIELD NAME="day" TYPE="int" LENGTH="1" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="week" NEXT="hour"/>
+        <FIELD NAME="hour" TYPE="int" LENGTH="2" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="day" NEXT="course"/>
+        <FIELD NAME="course" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" PREVIOUS="hour" NEXT="script"/>
+        <FIELD NAME="script" TYPE="char" LENGTH="100" NOTNULL="true" SEQUENCE="false" PREVIOUS="course" NEXT="time"/>
+        <FIELD NAME="time" TYPE="number" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DECIMALS="5" PREVIOUS="script"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="tool_siteperf_stats" COMMENT="-" PREVIOUS="tool_siteperf_log">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="year"/>
+        <FIELD NAME="year" TYPE="int" LENGTH="4" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="id" NEXT="week"/>
+        <FIELD NAME="week" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="year" NEXT="day"/>
+        <FIELD NAME="day" TYPE="int" LENGTH="1" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="week" NEXT="hour"/>
+        <FIELD NAME="hour" TYPE="int" LENGTH="2" NOTNULL="false" UNSIGNED="true" SEQUENCE="false" PREVIOUS="day" NEXT="course"/>
+        <FIELD NAME="course" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" PREVIOUS="hour" NEXT="script"/>
+        <FIELD NAME="script" TYPE="char" LENGTH="100" NOTNULL="false" SEQUENCE="false" PREVIOUS="course" NEXT="hits"/>
+        <FIELD NAME="hits" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" PREVIOUS="script" NEXT="time"/>
+        <FIELD NAME="time" TYPE="number" LENGTH="15" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" DECIMALS="5" PREVIOUS="hits"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id" NEXT="year_week_day_hour_course_script"/>
+        <KEY NAME="year_week_day_hour_course_script" TYPE="unique" FIELDS="year, week, day, hour, course, script" PREVIOUS="primary"/>
+      </KEYS>
+    </TABLE>
+  </TABLES>
+</XMLDB>

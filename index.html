@@ -1,0 +1,32 @@
+<div id="stats">
+  <div id="stats-nav">
+    <label for="stats-year"><?php echo ucfirst(get_string('year')); ?>:</label>
+    <select id="stats-year"></select>
+    <label for="stats-week"><?php print_string('week'); ?>:</label>
+    <select id="stats-week"></select>
+    <label for="stats-day"><?php echo ucfirst(get_string('day')); ?>:</label>
+    <select id="stats-day"></select>
+    <label for="stats-hour"><?php echo ucfirst(get_string('hour')); ?>:</label>
+    <select id="stats-hour"></select>
+    <?php print_string('hits'); ?>: <span id="stats-hits"></span>
+    <?php print_string('time'); ?>: <span id="stats-time"></span>
+    <button type="submit" id="stats-refresh"><?php print_string('refresh'); ?></button>
+  </div>
+  <div id="stats-chart"></div>
+  <div>
+    <table class="generaltable" id="stats-courses">
+      <tr>
+        <th><?php print_string('course'); ?></th>
+        <th><?php print_string('hits'); ?></th>
+        <th><?php print_string('time'); ?></th>
+      </tr>
+    </table>
+    <table class="generaltable" id="stats-scripts">
+      <tr>
+        <th><?php print_string('script', 'tool_siteperf'); ?></th>
+        <th><?php print_string('hits'); ?></th>
+        <th><?php print_string('time'); ?></th>
+      </tr>
+    </table>
+  </div>
+</div>
