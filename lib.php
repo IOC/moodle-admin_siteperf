@@ -40,6 +40,9 @@ class tool_siteperf {
     function log() {
         global $COURSE, $DB;
 
+        if (!$DB->get_manager()->table_exists('tool_siteperf_log')){
+            return false;
+        }
         $now = microtime(true);
         $time = $now - $this->timestamp;
         $localtime = localtime($this->timestamp, true);
@@ -361,6 +364,9 @@ function tool_siteperf_array_to_select($object) {
 function tool_siteperf_cron() {
     global $DB;
 
+    if (!$DB->get_manager()->table_exists('tool_siteperf_log')){
+        return false;
+    }
     try {
         $log = new tool_siteperf_log();
         $transaction = $DB->start_delegated_transaction();
