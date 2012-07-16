@@ -54,7 +54,9 @@ class tool_siteperf {
         $record->course = $COURSE->shortname;
         $record->script = $this->script();
         $record->time = $time;
-        $DB->insert_record('tool_siteperf_log', $record);
+        if (!empty($COURSE)){
+            $DB->insert_record('tool_siteperf_log', $record);
+        };
     }
 
     function script() {
