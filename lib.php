@@ -51,7 +51,7 @@ class tool_siteperf {
         $record->week = date('W', $now);
         $record->day = (date('w', $now) !== 0?date('w', $now):7);
         $record->hour = $localtime['tm_hour'];
-        $record->course = $COURSE->shortname;
+        $record->course = (!empty($COURSE)?$COURSE->shortname:'');
         $record->script = $this->script();
         $record->time = $time;
         if (!empty($COURSE)){
