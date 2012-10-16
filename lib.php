@@ -140,6 +140,8 @@ class tool_siteperf_stats {
     function add($year, $week, $day, $hour, $course, $script, $hits, $time) {
         global $DB;
 
+        $params = array();
+
         $where = new stdClass();
         $where->year = $year;
         $where->week = $week;
@@ -148,8 +150,8 @@ class tool_siteperf_stats {
         $where->course = $course;
         $where->script = $script;
 
-        $record = $DB->get_record_select('tool_siteperf_stats',
-                tool_siteperf_array_to_select($where));
+        list($select, $params) = tool_siteperf_array_to_select($where);
+        $record = $DB->get_record_select('tool_siteperf_stats', $select, $params);
         if ($record) {
             $record->hits += $hits;
             $record->time += $time;
@@ -178,8 +180,9 @@ class tool_siteperf_stats {
         global $DB;
 
         $object = new stdClass();
-        if ($record = $DB->get_record_select('tool_siteperf_stats',
-                $this->where($year, $week, $day, $hour))){
+
+        list($select, $params) = $this->where($year, $week, $day, $hour);
+        if ($record = $DB->get_record_select('tool_siteperf_stats', $select, $params)){
             $object->hits = (int) $record->hits;
             $object->time = (float) $record->time / $record->hits;
         }
@@ -220,9 +223,11 @@ class tool_siteperf_stats {
         global $DB;
 
         $courses = array();
-        $select = $this->where($year, $week, $day, $hour, true, false);
+        $params = array();
+
+        list($select, $params) = $this->where($year, $week, $day, $hour, true, false);
         $records = $DB->get_records_select('tool_siteperf_stats', $select,
-                null,'hits DESC', '*', 0, 20);
+                $params, 'hits DESC', '*', 0, 20);
         foreach ($records as $record) {
             $object = new stdClass();
             $object->name = $record->course;
@@ -237,9 +242,10 @@ class tool_siteperf_stats {
         global $DB;
 
         $scripts = array();
-        $select = $this->where($year, $week, $day, $hour, false, true);
+        $params = array();
+        list($select, $params) = $this->where($year, $week, $day, $hour, false, true);
         $records = $DB->get_records_select('tool_siteperf_stats', $select,
-                null, 'hits DESC', '*', 0, 20);
+                $params, 'hits DESC', '*', 0, 20);
         foreach ($records as $record) {
             $object = new stdClass();
             $object->name = $record->script;
@@ -337,30 +343,55 @@ class tool_siteperf_stats {
     }
 
     function where($year, $week, $day, $hour, $courses=false, $scripts=false) {
-        $where = array($year !== false ? "year=$year" : "year IS NULL",
-                $week !== false ? "week=$week" : "week IS NULL",
-                $day !== false ? "day=$day" : "day IS NULL",
-                $hour !== false ? "hour=$hour" : "hour IS NULL",
-                $courses !== false ? 'course IS NOT NULL' : "course IS NULL",
-                $scripts !== false ? 'script IS NOT NULL' : "script IS NULL");
-        return implode(' AND ', $where);
+        $params = array();
+        $where = array();
+        if($year !== false) {
+            $where[] = "year = :year";
+            $params['year'] = $year;
+        } else {
+            $where[] = "year IS NULL";
+        }
+        if($week !== false) {
+            $where[] = "week = :week";
+            $params['week'] = $week;
+        } else {
+            $where[] = "week IS NULL";
+        }
+        if($day !== false) {
+            $where[] = "day = :day";
+            $params['day'] = $day;
+        } else {
+            $where[] = "day IS NULL";
+        }
+        if($hour !== false) {
+            $where[] = "hour = :hour";
+            $params['hour'] = $hour;
+        } else {
+            $where[] = "hour IS NULL";
+        }
+        $where[] = ($courses !== false ? 'course IS NOT NULL' : "course IS NULL");
+        $where[] = ($scripts !== false ? 'script IS NOT NULL' : "script IS NULL");
+        return array(implode(' AND ', $where), $params);
     }
 }
 
 function tool_siteperf_array_to_select($object) {
     $select = array();
+    $params = array();
     foreach ($object as $name => $value) {
         if ($value === null or $value === false) {
             $select[] = "$name IS NULL";
         } elseif ($value === true) {
             $select[] = "$name IS NOT NULL";
         } elseif (is_numeric($value)) {
-            $select[] = "$name = $value";
+            $select[] = "$name = ?";
+            $params[] = $value;
         } else {
-            $select[] = "$name = '" . addslashes($value) . "'";
+            $select[] = "$name = ?";
+            $params[] = addslashes($value);
         }
     }
-    return implode(' AND ', $select);
+    return array(implode(' AND ', $select), $params);
 }
 
 function tool_siteperf_cron() {
