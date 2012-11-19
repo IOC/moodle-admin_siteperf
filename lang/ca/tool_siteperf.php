@@ -25,3 +25,4 @@
 
 $string['pluginname'] = 'Rendiment del lloc';
 $string['script'] = 'Script';
+$string['time'] = 'Temps';

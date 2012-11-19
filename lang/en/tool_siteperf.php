@@ -25,3 +25,4 @@
 
 $string['pluginname'] = 'Site performance';
 $string['script'] = 'Script';
+$string['time'] = 'Time';
