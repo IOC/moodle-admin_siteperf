@@ -24,4 +24,4 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$ADMIN->add('server', new admin_externalpage('toolsiteperf', get_string('pluginname', 'tool_siteperf'), "$CFG->wwwroot/$CFG->admin/tool/siteperf/index.php"));
+$ADMIN->add('reports', new admin_externalpage('toolsiteperf', get_string('pluginname', 'tool_siteperf'), "$CFG->wwwroot/$CFG->admin/tool/siteperf/index.php", 'moodle/site:viewreports'));
