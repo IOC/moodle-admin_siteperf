@@ -98,6 +98,6 @@ $data->scripts = $stats->fetch_scripts($data->year, $data->week,
                                        $data->day, $data->hour);
 
 $data->string = array('hits' => get_string('hits'),
-                      'time' => get_string('time'));
+                      'time' => get_string('time', 'tool_siteperf'));
 
 echo json_encode($data);
