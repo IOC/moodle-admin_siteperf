@@ -43,14 +43,13 @@ class tool_siteperf {
         if (!$DB->get_manager()->table_exists('tool_siteperf_log')){
             return false;
         }
-        $now = microtime(true);
-        $time = $now - $this->timestamp;
+        $time = microtime(true) - $this->timestamp;
         $localtime = localtime($this->timestamp, true);
         $record = new stdclass();
-        $record->year = date('o', $now);
-        $record->week = date('W', $now);
-        $record->day = (date('w', $now) !== '0'?date('w', $now):'7');
-        $record->hour = $localtime['tm_hour'];
+        $record->year = date('o', $this->timestamp);
+        $record->week = date('W', $this->timestamp);
+        $record->day = date('w', $this->timestamp) ?: 7;
+        $record->hour = date('G', $this->timestamp);
         $record->course = (!empty($COURSE)?$COURSE->shortname:'');
         $record->script = $this->script();
         $record->time = $time;
