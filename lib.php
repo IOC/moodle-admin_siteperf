@@ -44,7 +44,6 @@ class tool_siteperf {
             return false;
         }
         $time = microtime(true) - $this->timestamp;
-        $localtime = localtime($this->timestamp, true);
         $record = new stdclass();
         $record->year = date('o', $this->timestamp);
         $record->week = date('W', $this->timestamp);
