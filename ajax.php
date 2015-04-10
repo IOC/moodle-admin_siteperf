@@ -21,7 +21,7 @@
  * @package    tool
  * @subpackage siteperf
  * @copyright  Marc Català <mcatala@ioc.cat>
- * @copyright  Albert Gasset <albert.gasset@gmail.com> 
+ * @copyright  Albert Gasset <albert.gasset@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,6 +30,8 @@ require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->dirroot . '/admin/tool/siteperf/lib.php');
 
 admin_externalpage_setup('toolsiteperf');
+
+$csv = optional_param('csv', false, PARAM_BOOL);
 
 $data = new object;
 
@@ -43,61 +45,65 @@ foreach (array('year', 'week', 'day', 'hour') as $param) {
 
 $stats = new tool_siteperf_stats();
 
-$data->years = $stats->years();
-if (!empty($data->years) && !in_array($data->year, $data->years)) {
-    $data->year = max($data->years);
-}
-
-$data->weeks = $stats->weeks($data->year);
-if (!isset($data->weeks[$data->week])) {
-    $data->week = false;
-}
-
-if ($data->week === false) {
-    $data->day = false;
-    $data->days = false;
+if ($csv) {
+    $stats->export_csv($data->year, $data->week, $data->day, $data->hour);
 } else {
-    $data->days = $stats->days($data->year, $data->week);
-    if (!isset($data->days[$data->day])) {
+    $data->years = $stats->years();
+    if (!empty($data->years) && !in_array($data->year, $data->years)) {
+        $data->year = max($data->years);
+    }
+
+    $data->weeks = $stats->weeks($data->year);
+    if (!isset($data->weeks[$data->week])) {
+        $data->week = false;
+    }
+
+    if ($data->week === false) {
         $data->day = false;
+        $data->days = false;
+    } else {
+        $data->days = $stats->days($data->year, $data->week);
+        if (!isset($data->days[$data->day])) {
+            $data->day = false;
+        }
     }
-}
 
-if ($data->day === false) {
-    $data->hour = false;
-    $data->hours = false;
-} else {
-    $data->hours = $stats->hours($data->year, $data->week, $data->day);
-    if (!isset($data->hours[$data->hour])) {
+    if ($data->day === false) {
         $data->hour = false;
+        $data->hours = false;
+    } else {
+        $data->hours = $stats->hours($data->year, $data->week, $data->day);
+        if (!isset($data->hours[$data->hour])) {
+            $data->hour = false;
+        }
     }
+
+
+    $r = $stats->fetch($data->year, $data->week, $data->day, $data->hour);
+    $data->time = (isset($r->time)?$r->time:'');
+    $data->hits = (isset($r->hits)?$r->hits:'');
+
+    if ($data->hour !== false) {
+        $data->context = 'hour';
+        $data->chart = false;
+    } elseif ($data->day !== false) {
+        $data->context = 'day';
+        $data->chart = $stats->fetch_hours($data->year, $data->week, $data->day);
+    } elseif ($data->week !== false) {
+        $data->context = 'week';
+        $data->chart = $stats->fetch_days($data->year, $data->week);
+    } else {
+        $data->context = 'year';
+        $data->chart = $stats->fetch_weeks($data->year);
+    }
+
+    $data->courses = $stats->fetch_courses($data->year, $data->week,
+                                           $data->day, $data->hour);
+    $data->scripts = $stats->fetch_scripts($data->year, $data->week,
+                                           $data->day, $data->hour);
+
+    $data->string = array('hits' => get_string('hits'),
+                          'time' => get_string('time', 'tool_siteperf'));
+
+    echo json_encode($data);
 }
-
-
-$r = $stats->fetch($data->year, $data->week, $data->day, $data->hour);
-$data->time = (isset($r->time)?$r->time:'');
-$data->hits = (isset($r->hits)?$r->hits:'');
-
-if ($data->hour !== false) {
-    $data->context = 'hour';
-    $data->chart = false;
-} elseif ($data->day !== false) {
-    $data->context = 'day';
-    $data->chart = $stats->fetch_hours($data->year, $data->week, $data->day);
-} elseif ($data->week !== false) {
-    $data->context = 'week';
-    $data->chart = $stats->fetch_days($data->year, $data->week);
-} else {
-    $data->context = 'year';
-    $data->chart = $stats->fetch_weeks($data->year);
-}
-
-$data->courses = $stats->fetch_courses($data->year, $data->week,
-                                       $data->day, $data->hour);
-$data->scripts = $stats->fetch_scripts($data->year, $data->week,
-                                       $data->day, $data->hour);
-
-$data->string = array('hits' => get_string('hits'),
-                      'time' => get_string('time', 'tool_siteperf'));
-
-echo json_encode($data);

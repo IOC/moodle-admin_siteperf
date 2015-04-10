@@ -26,6 +26,7 @@
  */
 
 require_once($CFG->dirroot . '/lib/dmllib.php');
+require_once($CFG->libdir . '/csvlib.class.php');
 
 class tool_siteperf {
 
@@ -180,11 +181,80 @@ class tool_siteperf_stats {
         $object = new stdClass();
 
         list($select, $params) = $this->where($year, $week, $day, $hour);
-        if ($record = $DB->get_record_select('tool_siteperf_stats', $select, $params)){
+        if ($record = $DB->get_record_select('tool_siteperf_stats', $select, $params)) {
             $object->hits = (int) $record->hits;
             $object->time = (float) $record->time / $record->hits;
         }
         return $object;
+    }
+
+    public function export_csv($year, $week=false, $day=false, $hour=false) {
+        global $DB, $SITE;
+
+        $exportdata = array(
+                get_string('date'),
+                get_string('hits'),
+                get_string('time', 'tool_siteperf')
+        );
+        $sql = "SELECT *" .
+            " FROM {tool_siteperf_stats}";
+
+        if ($week === false) {
+            $downloadfilename = clean_filename($year . "_" . $SITE->shortname);
+            $sql .= " WHERE year = :year
+                AND week IS NOT NULL
+                AND day IS NOT NULL
+                AND hour IS NULL
+                AND course IS NULL
+                AND script IS NULL
+                ORDER BY week ASC";
+            $params = array('year' => $year);
+        } else {
+            $filename = $year . '_' . $week;
+            if ($day !== false) {
+                $filename .= '_' . $day;
+            }
+            if ($hour !== false) {
+                $filename .= '_' . $hour;
+            }
+            $filename .= '_' . $SITE->shortname;
+            $downloadfilename = clean_filename($filename);
+            list($where, $params) = $this->where($year, $week, $day, $hour, true);
+            $sql .= " WHERE " . $where . " ORDER BY week ASC";
+            if ($hour === false and $day === false) {
+                $exportdata[0] = get_string('week');
+            }
+            array_splice($exportdata, 1, 0, get_string('course'));
+        }
+        $rs = $DB->get_recordset_sql($sql, $params);
+        if (!empty($rs)) {
+            $csvexport = new csv_export_writer();
+            $csvexport->set_filename($downloadfilename);
+            $csvexport->add_data($exportdata);
+            foreach ($rs as $row) {
+                $exportdata = array();
+                $date = new DateTime();
+                $date->setISODate($row->year, $row->week, !is_null($row->day) ? $row->day : 1);
+                if ($week === false) {
+                    $exportdata[] = $date->format('Y/m/d');
+                } else if ($day === false) {
+                    $exportdata[] = date_format_string($date->getTimestamp(), '%Y-%d-%B');
+                    $exportdata[] = $row->course;
+                } else if ($hour === false) {
+                    $exportdata[] = $date->format('Y/m/d');
+                    $exportdata[] = $row->course;
+                } else {
+                    $exportdata[] = $date->format('Y/m/d') . ' ' . $row->hour . ':00';
+                    $exportdata[] = $row->course;
+                }
+                $exportdata[] = $row->hits;
+                $exportdata[] = $row->time / $row->hits;
+                $csvexport->add_data($exportdata);
+            }
+            $rs->close();
+            $csvexport->download_file();
+        }
+        $rs->close();
     }
 
     function fetch_weeks($year) {

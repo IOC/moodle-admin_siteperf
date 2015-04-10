@@ -23,6 +23,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['exportcsv'] = 'Exporta a CSV';
 $string['pluginname'] = 'Rendiment del lloc';
 $string['script'] = 'Script';
 $string['time'] = 'Temps';

@@ -57,6 +57,17 @@ $(document).ready(function() {
 		$('#stats').removeClass('updating');
     }
 
+    var exportcsv = function() {
+        var params = [
+            "csv=1",
+            "year=" + $('#stats-year').val(),
+            "week=" + $('#stats-week').val(),
+            "day=" + $('#stats-day').val(),
+            "hour=" + $('#stats-hour').val()
+        ];
+        window.location.href = 'ajax.php?' + params.join('&');
+    };
+
     var format_hits = function(number) {
         var units = ['K', 'M', 'G', 'T'];
         var current_unit = '';
@@ -215,6 +226,7 @@ $(document).ready(function() {
     $('#stats-day').change(change);
     $('#stats-hour').change(change);
     $('#stats-refresh').click(change);
+    $('#stats-csv').click(exportcsv);
 
     init();
 });
