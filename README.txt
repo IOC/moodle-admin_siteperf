@@ -1,9 +1,9 @@
 SITE PERFORMANCE ADMIN PLUGIN
 =================================
 
-Site performance is a Moodle 2.X admin plugin that allow administrators to check system performance. 
-Data is shown on a graph and can be filtered by year, week, day and hour.   
-   
+Site performance is a Moodle 2.X admin plugin that allow administrators to check system performance.
+Data is shown on a graph and can be filtered by year, week, day and hour.
+
 Web: https://github.com/IOC/moodle-admin-siteperf
 
 
@@ -15,17 +15,17 @@ Download code from gitHub, and copy inside directory MOODLE_PATH/admin/tool/site
 Custom modifications to Moodle 2.3 source code:
 
  - lib/outputrenderers.php inside footer function (line 799):
- 
+
     tool_siteperf::shutdown();
-    
+
  - lib/setup.php under require_once($CFG->libdir .'/setuplib.php'); (line 398):
- 
+
     require_once($CFG->dirroot . '/admin/tool/siteperf/lib.php');
     tool_siteperf::init();
-    
+
  - lib/weblib.php inside redirect function (line 2446):
- 
-    tool_siteperf::shutdown(); 
+
+    tool_siteperf::shutdown();
 
 
 jQuery & jqPlot

@@ -1,27 +1,25 @@
 <?php
-
-//  Site performance plugin for Moodle
-//  Copyright © 2012  Institut Obert de Catalunya
+// This file is part of Moodle - http://moodle.org/
 //
-//  This program is free software: you can redistribute it and/or modify
-//  it under the terms of the GNU General Public License as published by
-//  the Free Software Foundation, either version 3 of the License, or
-//  (at your option) any later version.
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU General Public License for more details.
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-//  You should have received a copy of the GNU General Public License
-//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  *
  * @package    tool
  * @subpackage siteperf
- * @copyright  Marc Català <mcatala@ioc.cat>
- * @copyright  Albert Gasset <albert.gasset@gmail.com> 
+ * @author     Marc Català <mcatala@ioc.cat>
+ * @author     Albert Gasset <albert.gasset@gmail.com>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -30,18 +28,16 @@ require_once($CFG->libdir . '/csvlib.class.php');
 
 class tool_siteperf {
 
-    var $queries;
-    var $query_timestamp;
-    var $timestamp;
+    private $timestamp;
 
-    function __construct() {
+    public function __construct() {
         $this->timestamp = microtime(true);
     }
 
-    function log() {
+    public function log() {
         global $COURSE, $DB;
 
-        if (!$DB->get_manager()->table_exists('tool_siteperf_log')){
+        if (!$DB->get_manager()->table_exists('tool_siteperf_log')) {
             return false;
         }
         $time = microtime(true) - $this->timestamp;
@@ -50,22 +46,22 @@ class tool_siteperf {
         $record->week = date('W', $this->timestamp);
         $record->day = date('w', $this->timestamp) ?: 7;
         $record->hour = date('G', $this->timestamp);
-        $record->course = (!empty($COURSE)?$COURSE->shortname:'');
+        $record->course = (!empty($COURSE) ? $COURSE->shortname : '');
         $record->script = $this->script();
         $record->time = $time;
-        if (!empty($COURSE)){
+        if (!empty($COURSE)) {
             $DB->insert_record('tool_siteperf_log', $record);
         };
     }
 
-    function script() {
+    private function script() {
         global $CFG, $ME;
 
         $script = str_replace('https://', 'http://', $ME);
         $script = str_replace($CFG->wwwroot, '', $script);
         $script = trim($script, '/');
 
-        if (strpos($script, '.php') === FALSE) {
+        if (strpos($script, '.php') === false) {
             $script .= '/index.php';
         } else {
             $parts = explode('.php', $script);
@@ -75,17 +71,17 @@ class tool_siteperf {
         return trim($script, '/');
     }
 
-    static function init() {
-        global $TOOL_SITEPERF;
+    public static function init() {
+        global $TOOLSITEPERF;
 
-        $TOOL_SITEPERF = new tool_siteperf;
+        $TOOLSITEPERF = new tool_siteperf;
     }
 
-    static function shutdown() {
-        global $CFG, $TOOL_SITEPERF;
+    public static function shutdown() {
+        global $CFG, $TOOLSITEPERF;
 
         if (empty($CFG->tool_siteperf_disable)) {
-            $TOOL_SITEPERF->log();
+            $TOOLSITEPERF->log();
         }
     }
 
@@ -93,7 +89,7 @@ class tool_siteperf {
 
 class tool_siteperf_log {
 
-    function fetch_aggregate($maxid, $fields) {
+    private function fetch_aggregate($maxid, $fields) {
         global $DB;
         $sql = 'SELECT MAX(id), ' . $fields . ', COUNT(*) AS hits, SUM(time) AS time'.
                 ' FROM {tool_siteperf_log}'.
@@ -103,7 +99,7 @@ class tool_siteperf_log {
         return $records ? $records : array();
     }
 
-    function move_to_stats() {
+    public function move_to_stats() {
         global $DB;
         $maxid = $DB->get_field('tool_siteperf_log', 'MAX(id)', array());
 
@@ -134,9 +130,9 @@ class tool_siteperf_log {
 
 class tool_siteperf_stats {
 
-    static $daysofweek = array('', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday');
+    public static $daysofweek = array('', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday');
 
-    function add($year, $week, $day, $hour, $course, $script, $hits, $time) {
+    public function add($year, $week, $day, $hour, $course, $script, $hits, $time) {
         global $DB;
 
         $params = array();
@@ -163,7 +159,7 @@ class tool_siteperf_stats {
         }
     }
 
-    function add_records($records) {
+    public function add_records($records) {
         foreach ($records as $r) {
             $this->add(isset($r->year) ? $r->year : null,
                     isset($r->week) ? $r->week : null,
@@ -175,7 +171,7 @@ class tool_siteperf_stats {
         }
     }
 
-    function fetch($year, $week=false, $day=false, $hour=false) {
+    public function fetch($year, $week=false, $day=false, $hour=false) {
         global $DB;
 
         $object = new stdClass();
@@ -257,7 +253,7 @@ class tool_siteperf_stats {
         $rs->close();
     }
 
-    function fetch_weeks($year) {
+    public function fetch_weeks($year) {
         $stats = array();
         foreach ($this->weeks($year) as $week => $label) {
             $record = $this->fetch($year, $week);
@@ -267,7 +263,7 @@ class tool_siteperf_stats {
         return $stats;
     }
 
-    function fetch_days($year, $week) {
+    public function fetch_days($year, $week) {
         $stats = array();
         foreach ($this->days($year, $week) as $day => $label) {
             $record = $this->fetch($year, $week, $day);
@@ -277,7 +273,7 @@ class tool_siteperf_stats {
         return $stats;
     }
 
-    function fetch_hours($year, $week, $day) {
+    public function fetch_hours($year, $week, $day) {
         $stats = array();
         foreach ($this->hours($year, $week, $day) as $hour => $label) {
             $record = $this->fetch($year, $week, $day, $hour);
@@ -287,7 +283,7 @@ class tool_siteperf_stats {
         return $stats;
     }
 
-    function fetch_courses($year, $week=false, $day=false, $hour=false) {
+    public function fetch_courses($year, $week=false, $day=false, $hour=false) {
         global $DB;
 
         $courses = array();
@@ -299,14 +295,14 @@ class tool_siteperf_stats {
         foreach ($records as $record) {
             $object = new stdClass();
             $object->name = $record->course;
-            $object->hits =(int) $record->hits;
-            $object->time =(float) $record->time / $record->hits;
+            $object->hits = (int) $record->hits;
+            $object->time = (float) $record->time / $record->hits;
             $courses[] = $object;
         }
         return $courses;
     }
 
-    function fetch_scripts($year, $week=false, $day=false, $hour=false) {
+    public function fetch_scripts($year, $week=false, $day=false, $hour=false) {
         global $DB;
 
         $scripts = array();
@@ -324,7 +320,7 @@ class tool_siteperf_stats {
         return $scripts;
     }
 
-    function years() {
+    public function years() {
         global $DB;
 
         $years = array();
@@ -344,7 +340,7 @@ class tool_siteperf_stats {
         return $years;
     }
 
-    function weeks($year) {
+    public function weeks($year) {
         global $DB;
 
         $weeks = array();
@@ -357,7 +353,7 @@ class tool_siteperf_stats {
 
         if ($records = $DB->get_records_sql($sql, array($year))) {
             foreach ($records as $week => $record) {
-                $start = getWeekOffsetTimestamp($year, $week);
+                $start = get_week_offset_timestamp($year, $week);
                 $weeks[(int) $week] = userdate($start, '%d %B');
             }
         }
@@ -365,7 +361,7 @@ class tool_siteperf_stats {
         return $weeks;
     }
 
-    function days($year, $week) {
+    public function days($year, $week) {
         global $DB;
 
         $days = array();
@@ -378,10 +374,10 @@ class tool_siteperf_stats {
 
         if ($records = $DB->get_records_sql($sql, array($year, $week))) {
             foreach ($records as $day => $record) {
-                $day = intval($day,10);
+                $day = intval($day, 10);
                 $dayofweek = self::$daysofweek[$day];
-                $start = getWeekOffsetTimestamp($year, $week);
-                $start = strtotime("+".($day-1)." days", $start);
+                $start = get_week_offset_timestamp($year, $week);
+                $start = strtotime("+".($day - 1)." days", $start);
                 $days[$day] = get_string($dayofweek, 'calendar') . ' ' . date('d', $start);
             }
         }
@@ -389,7 +385,7 @@ class tool_siteperf_stats {
         return $days;
     }
 
-    function hours($year, $week, $day) {
+    public function hours($year, $week, $day) {
         global $DB;
 
         $hours = array();
@@ -410,28 +406,28 @@ class tool_siteperf_stats {
         return $hours;
     }
 
-    function where($year, $week, $day, $hour, $courses=false, $scripts=false) {
+    public function where($year, $week, $day, $hour, $courses=false, $scripts=false) {
         $params = array();
         $where = array();
-        if($year !== false) {
+        if ($year !== false) {
             $where[] = "year = :year";
             $params['year'] = $year;
         } else {
             $where[] = "year IS NULL";
         }
-        if($week !== false) {
+        if ($week !== false) {
             $where[] = "week = :week";
             $params['week'] = $week;
         } else {
             $where[] = "week IS NULL";
         }
-        if($day !== false) {
+        if ($day !== false) {
             $where[] = "day = :day";
             $params['day'] = $day;
         } else {
             $where[] = "day IS NULL";
         }
-        if($hour !== false) {
+        if ($hour !== false) {
             $where[] = "hour = :hour";
             $params['hour'] = $hour;
         } else {
@@ -449,9 +445,9 @@ function tool_siteperf_array_to_select($object) {
     foreach ($object as $name => $value) {
         if ($value === null or $value === false) {
             $select[] = "$name IS NULL";
-        } elseif ($value === true) {
+        } else if ($value === true) {
             $select[] = "$name IS NOT NULL";
-        } elseif (is_numeric($value)) {
+        } else if (is_numeric($value)) {
             $select[] = "$name = ?";
             $params[] = $value;
         } else {
@@ -465,7 +461,7 @@ function tool_siteperf_array_to_select($object) {
 function tool_siteperf_cron() {
     global $DB;
 
-    if (!$DB->get_manager()->table_exists('tool_siteperf_log')){
+    if (!$DB->get_manager()->table_exists('tool_siteperf_log')) {
         return false;
     }
     try {
@@ -473,21 +469,21 @@ function tool_siteperf_cron() {
         $transaction = $DB->start_delegated_transaction();
         $log->move_to_stats();
         $transaction->allow_commit();
-    } catch(Exception $e) {
+    } catch (Exception $e) {
         $transaction->rollback($e);
     }
 }
 
-function getWeekOffsetTimestamp($year, $week) {
+function get_week_offset_timestamp($year, $week) {
     // According to ISO-8601, January 4th is always in week 1
-    $halfwayTheWeek = strtotime($year . "0104 +" . ($week - 1) . " weeks");
+    $halfwaytheweek = strtotime($year . "0104 +" . ($week - 1) . " weeks");
 
     // Subtract days to Monday
-    $dayOfTheWeek = date("N", $halfwayTheWeek);
-    $daysToSubtract = $dayOfTheWeek - 1;
+    $dayoftheweek = date("N", $halfwaytheweek);
+    $daystosubtract = $dayoftheweek - 1;
 
     // Calculate the week's timestamp
-    $unixTimestamp = strtotime("-$daysToSubtract day", $halfwayTheWeek);
+    $unixtimestamp = strtotime("-$daystosubtract day", $halfwaytheweek);
 
-    return $unixTimestamp;
+    return $unixtimestamp;
 }
