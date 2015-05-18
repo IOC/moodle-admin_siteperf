@@ -216,7 +216,7 @@ class tool_siteperf_stats {
             $filename .= '_' . $SITE->shortname;
             $downloadfilename = clean_filename($filename);
             list($where, $params) = $this->where($year, $week, $day, $hour, true);
-            $sql .= " WHERE " . $where . " ORDER BY week ASC";
+            $sql .= " WHERE " . $where . " ORDER BY hits DESC";
             if ($hour === false and $day === false) {
                 $exportdata[0] = get_string('week');
             }
@@ -234,7 +234,7 @@ class tool_siteperf_stats {
                 if ($week === false) {
                     $exportdata[] = $date->format('Y/m/d');
                 } else if ($day === false) {
-                    $exportdata[] = date_format_string($date->getTimestamp(), '%Y-%d-%B');
+                    $exportdata[] = date_format_string($date->getTimestamp(), '%Y/%m/%d');
                     $exportdata[] = $row->course;
                 } else if ($hour === false) {
                     $exportdata[] = $date->format('Y/m/d');
