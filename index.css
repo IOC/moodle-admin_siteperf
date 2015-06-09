@@ -43,3 +43,13 @@
 .jqplot-cursor-tooltip{
     cursor:pointer;
 }
+
+#stats-nav label {
+    display: inline;
+}
+
+#stats-courses,
+#stats-scripts {
+    width: auto;
+}
+
