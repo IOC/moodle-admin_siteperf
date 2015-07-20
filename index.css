@@ -19,8 +19,8 @@
 }
 
 #stats-chart {
-    width: 900px;
-    height: 300px;
+    width: 100%;
+    min-width: 480px;
     margin: 1em 0;
 }
 
@@ -50,7 +50,7 @@
 
 #stats-courses,
 #stats-scripts {
-    width: auto;
+    width: 45%;
 }
 
 @media (max-width:768px) {

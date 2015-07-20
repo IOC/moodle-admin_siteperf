@@ -1,5 +1,6 @@
 $(document).ready(function() {
 
+    var M_jqplot = false;
     var M_jqplot_context = '';
 
     $('#stats-chart').bind('jqplotcustomDataMouseOver', function (e, data) {
@@ -123,21 +124,21 @@ $(document).ready(function() {
             tickangle.formatter = formatter_data;
             tooltips.tooltipAxes='both';
             tooltips.formatString='%s <br /><strong>%s</strong>';
-            $.jqplot('stats-chart', [hits, time],
-                     {legend: {show: true},
-                      series: [{label: data.string.hits },
-                               {label: data.string.time, yaxis: "y2axis" }],
-                      axesDefaults: {useSeriesColor: true},
-                      axes: {xaxis: {renderer: $.jqplot.CategoryAxisRenderer,
-                             tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
-                             tickOptions: tickangle
-                            },
-                             yaxis: {autoscale: true,
-                                     tickOptions: {formatter: formatter_hits}},
-                             y2axis: {autoscale: true,
-                                      tickOptions: {formatter: formatter_time}}},
-                      highlighter: tooltips,
-                      cursor: {show: false}});
+            M_jqplot = $.jqplot('stats-chart', [hits, time],
+                         {legend: {show: true},
+                          series: [{label: data.string.hits },
+                                   {label: data.string.time, yaxis: "y2axis" }],
+                          axesDefaults: {useSeriesColor: true},
+                          axes: {xaxis: {renderer: $.jqplot.CategoryAxisRenderer,
+                                 tickRenderer: $.jqplot.CanvasAxisTickRenderer ,
+                                 tickOptions: tickangle
+                                },
+                                 yaxis: {autoscale: true,
+                                         tickOptions: {formatter: formatter_hits}},
+                                 y2axis: {autoscale: true,
+                                          tickOptions: {formatter: formatter_time}}},
+                          highlighter: tooltips,
+                          cursor: {show: false}});
         } else {
             $('#stats-chart').hide();
         }
@@ -227,6 +228,12 @@ $(document).ready(function() {
     $('#stats-hour').change(change);
     $('#stats-refresh').click(change);
     $('#stats-csv').click(exportcsv);
+
+    $(window).resize(function() {
+        if (M_jqplot) {
+          M_jqplot.replot( { resetAxes: true } );
+        }
+    });
 
     init();
 });
