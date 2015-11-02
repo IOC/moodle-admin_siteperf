@@ -458,22 +458,6 @@ function tool_siteperf_array_to_select($object) {
     return array(implode(' AND ', $select), $params);
 }
 
-function tool_siteperf_cron() {
-    global $DB;
-
-    if (!$DB->get_manager()->table_exists('tool_siteperf_log')) {
-        return false;
-    }
-    try {
-        $log = new tool_siteperf_log();
-        $transaction = $DB->start_delegated_transaction();
-        $log->move_to_stats();
-        $transaction->allow_commit();
-    } catch (Exception $e) {
-        $transaction->rollback($e);
-    }
-}
-
 function get_week_offset_timestamp($year, $week) {
     // According to ISO-8601, January 4th is always in week 1
     $halfwaytheweek = strtotime($year . "0104 +" . ($week - 1) . " weeks");

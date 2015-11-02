@@ -22,6 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+$string['crontask'] = 'Processament de les dades de rendiment del lloc';
 $string['exportcsv'] = 'Exporta a CSV';
 $string['pluginname'] = 'Rendiment del lloc';
 $string['script'] = 'Script';
