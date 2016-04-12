@@ -30,7 +30,7 @@ admin_externalpage_setup('toolsiteperf');
 
 $path = "/$CFG->admin/tool/siteperf";
 
-$PAGE->requires->js( $path . '/lib/jquery.min.js');
+$PAGE->requires->jquery();
 $PAGE->requires->js( $path . '/lib/jquery.jqplot.min.js');
 $PAGE->requires->js( $path . '/lib/plugins/jqplot.categoryAxisRenderer.min.js');
 $PAGE->requires->js( $path . '/lib/plugins/jqplot.canvasTextRenderer.min.js');
