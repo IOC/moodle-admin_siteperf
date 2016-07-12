@@ -31,7 +31,7 @@ admin_externalpage_setup('toolsiteperf');
 
 $csv = optional_param('csv', false, PARAM_BOOL);
 
-$data = new object;
+$data = new stdClass();
 
 foreach (array('year', 'week', 'day', 'hour') as $param) {
     $data->$param = false;
