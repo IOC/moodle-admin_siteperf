@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function($) {
 
     var M_jqplot = false;
     var M_jqplot_context = '';
@@ -236,4 +236,4 @@ $(document).ready(function() {
     });
 
     init();
-});
+}, jQuery);
