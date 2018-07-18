@@ -15,16 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Privacy Subsystem implementation for tool_siteperf.
  *
- * @package    tool
- * @subpackage siteperf
- * @author     Marc Català <mcatala@ioc.cat>
+ * @package    tool_siteperf
+ * @copyright  2018 Institut Obert de Catalunya
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['crontask'] = 'Processament de les dades de rendiment del lloc';
-$string['exportcsv'] = 'Exporta a CSV';
-$string['pluginname'] = 'Rendiment del lloc';
-$string['privacy:metadata'] = 'Rendiment del lloc no enregistra cap dada personal.';
-$string['script'] = 'Script';
-$string['time'] = 'Temps';
+namespace tool_siteperf\privacy;
+
+defined('MOODLE_INTERNAL') || die();
+
+class provider implements \core_privacy\local\metadata\null_provider {
+
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason() : string {
+        return 'privacy:metadata';
+    }
+}

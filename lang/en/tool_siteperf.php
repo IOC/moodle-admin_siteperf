@@ -25,5 +25,6 @@
 $string['crontask'] = 'Background processing site performance data';
 $string['exportcsv'] = 'Export to CSV';
 $string['pluginname'] = 'Site performance';
+$string['privacy:metadata'] = 'Site performance plugin does not store any personal data.';
 $string['script'] = 'Script';
 $string['time'] = 'Time';
