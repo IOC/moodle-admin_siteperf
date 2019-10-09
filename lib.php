@@ -46,7 +46,7 @@ class tool_siteperf {
         $record->week = date('W', $this->timestamp);
         $record->day = date('w', $this->timestamp) ?: 7;
         $record->hour = date('G', $this->timestamp);
-        $record->course = (!empty($COURSE) ? $COURSE->shortname : '');
+        $record->course = (!empty($COURSE) && !empty($COURSE->shortname) & !is_null($COURSE->shortname) ? $COURSE->shortname : '');
         $record->script = $this->script();
         $record->time = $time;
         if (!empty($COURSE)) {
