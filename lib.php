@@ -31,7 +31,7 @@ class tool_siteperf {
     private $timestamp;
 
     public function __construct() {
-        $this->timestamp = microtime(true);
+        $this->timestamp = intval(microtime(true));
     }
 
     public function log() {
